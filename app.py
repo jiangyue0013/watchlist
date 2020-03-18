@@ -66,11 +66,16 @@ class Movie(db.Model):
     title = db.Column(db.String(60))
     year = db.Column(db.String(4))
 
+@app.context_processor
+def inject_user():  # 函数名可以随意修改
+    user = User.query.first()
+    return dict(user=user)  # 需要返回字典，等同于 return {'user': user}
+
 @app.route('/')
 def index():
-    user = User.query.first()
+    print(url_for('static', filename='style.css'))
     movies = Movie.query.all()
-    return render_template('index.html', user=user, movies=movies)
+    return render_template('index.html', movies=movies)
 
 @app.route('/user/<name>')
 def user_page(name):
@@ -84,3 +89,7 @@ def test_url_for():
     print(url_for('test_url_for'))
     print(url_for('test_url_for', num=2))
     return 'Test Page'
+
+@app.errorhandler(404)  # 传入要处理的错误代码
+def page_not_found(e):  # 接受异常对象作为参数
+    return render_template('404.html'), 404  # 返回模板和状态码
