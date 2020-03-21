@@ -4,4 +4,6 @@ _pycache_
 .DS_Store
 .env
 *.db
-.vscode
+/.vscode
+.coverage
+/htmlcov
