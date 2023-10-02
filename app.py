@@ -14,8 +14,9 @@ else:
     prefix = "sqlite:////"
 
 app = Flask(__name__)
-app.config["SECRET_KEY"]="secret"
-app.config["SQLALCHEMY_DATABASE_URI"] = prefix + os.path.join(app.root_path, "data.db")
+app.config["SECRET_KEY"] = "secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = prefix + \
+    os.path.join(app.root_path, "data.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
@@ -99,7 +100,7 @@ def index():
     return render_template("index.html", movies=movies)
 
 
-@app.route("/movie/edit/<int:movie_id>", methods=["GET","POST"])
+@app.route("/movie/edit/<int:movie_id>", methods=["GET", "POST"])
 @login_required
 def edit(movie_id):
     movie = Movie.query.get_or_404(movie_id)
@@ -109,7 +110,7 @@ def edit(movie_id):
         year = request.form["year"]
 
         if not title or not year or len(year) != 4 or len(title) > 60:
-            flash("Invalid input")
+            flash("Invalid input.")
             return redirect(url_for("edit", movie_id=movie_id))
 
         movie.title = title
@@ -130,20 +131,21 @@ def delete(movie_id):
     flash("Item deleted.")
     return redirect(url_for("index"))
 
+
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
-    if request.method=="POST":
+    if request.method == "POST":
         name = request.form["name"]
 
-        if not name or len(name) >20:
+        if not name or len(name) > 20:
             flash("Invalid input.")
             return redirect(url_for("settings"))
 
         current_user.name = name
         db.session.commit()
         flash("Settings updated.")
-        return redirect(url_for("idnex"))
+        return redirect(url_for("index"))
 
     return render_template("settings.html")
 
@@ -205,7 +207,8 @@ def admin(username, password):
 
     user = User.query.first()
     if user is not None:
-        click.echo("Updateing user...")
+        click.echo("Updating user ...")
+        user.username=username
         user.set_password(password)
     else:
         click.echo("Creating user ...")
@@ -214,4 +217,3 @@ def admin(username, password):
         db.session.add(user)
     db.session.commit()
     click.echo("Done.")
-
